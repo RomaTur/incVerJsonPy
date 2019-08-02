@@ -1,0 +1,119 @@
+{
+  "main": "node_modules/expo/AppEntry.js",
+  "version": "2.1.0",
+  "scripts": {
+    "start": "expo start --config ./appCsp.json",
+    "android": "expo start --android --config ./appCsp.json",
+    "ios": "expo start --ios --config ./appCsp.json",
+    "e2e": "detox test --configuration ios.sim",
+    "test": "npm run tslint && npm run tsc-test && npm run jest",
+    "tslint": "tslint --project .",
+    "tsc-test": "tsc --project . --noEmit",
+    "jest": "jest",
+    "upload-internal:android": "expo upload:android --track internal --key ~/projects/client_secret_688158700003-2crttmb2hg9fea4e3cd7d6lcmh8rf94n.apps.googleusercontent.com.json",
+    "build_android:csp": "expo build:android --config ./appCsp.json --release-channel csp-server",
+    "build_ios:csp": "expo build:ios --config ./appCsp.json --release-channel csp-server",
+    "build_android:sahalin": "expo build:android --config ./appSahalin.json --release-channel sahalin-server",
+    "build_ios:sahalin": "expo build:ios --config ./appSahalin.json --release-channel sahalin-server",
+    "refresh_js-bundle:csp": "expo publish  --config ./appCsp.json --release-channel csp-server",
+    "refresh_js-bundle:sahalin": "expo publish --config ./appSahalin.json --release-channel sahalin-server",
+    "build:sahalin": "yarn build_android:sahalin && yarn build_ios:sahalin",
+    "build:csp": "yarn build_android:csp && yarn build_ios:csp",
+    "refresh_js-bundle": "yarn refresh_js-bundle:sahalin && yarn refresh_js-bundle:csp"
+  },
+  "dependencies": {
+    "@bugsnag/expo": "^6.3.0",
+    "expo": "^33.0.0",
+    "expo-camera": "~5.0.1",
+    "expo-constants": "~5.0.1",
+    "expo-file-system": "~5.0.1",
+    "expo-image-manipulator": "^5.0.1",
+    "expo-linear-gradient": "~5.0.1",
+    "expo-location": "~5.0.1",
+    "expo-permissions": "~5.0.1",
+    "form-data": "^2.5.0",
+    "jwt-decode": "^2.2.0",
+    "moment": "^2.24.0",
+    "react": "16.8.3",
+    "react-native": "https://github.com/expo/react-native/archive/sdk-33.0.0.tar.gz",
+    "react-native-check-box": "^2.1.7",
+    "react-native-image-placeholder": "^1.0.14",
+    "react-native-imask": "^0.0.3",
+    "react-navigation": "^3.6.0",
+    "react-redux": "^6.0.1",
+    "redux": "^4.0.1",
+    "redux-logger": "^3.0.6",
+    "redux-persist": "^5.10.0",
+    "redux-persist-expo-fs-storage": "^1.2.2",
+    "redux-thunk": "^2.3.0",
+    "styled-components": "^4.3.2",
+    "superagent": "^5.0.2"
+  },
+  "devDependencies": {
+    "@types/detox": "^12.8.2",
+    "@types/expo": "^32.0.9",
+    "@types/jasmine": "^3.3.13",
+    "@types/jest": "^24.0.15",
+    "@types/react": "^16.8.10",
+    "@types/react-native": "^0.57.0",
+    "@types/react-redux": "^7.0.6",
+    "@types/react-test-renderer": "^16.8.1",
+    "@types/redux-logger": "^3.0.7",
+    "@types/styled-components": "^4.1.18",
+    "@types/superagent": "^4.1.1",
+    "babel-preset-expo": "^5.2.0",
+    "detox": "12.3.0",
+    "detox-expo-helpers": "^0.6.0",
+    "expo-detox-hook": "^1.0.10",
+    "jest": "^24.8.0",
+    "jest-expo": "^33.0.2",
+    "prettier": "1.16.4",
+    "react-native-testing-library": "^1.11.1",
+    "react-test-renderer": "^16.8.6",
+    "ts-jest": "^24.0.2",
+    "tslint": "^5.14.0",
+    "tslint-config-airbnb": "^5.11.1",
+    "tslint-config-prettier": "^1.18.0",
+    "typescript": "^3.5.2"
+  },
+  "private": true,
+  "jest": {
+    "preset": "jest-expo",
+    "transform": {
+      "^.+\\.js$": "<rootDir>/node_modules/react-native/jest/preprocessor.js",
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testMatch": [
+      "**/__tests__/**/*.ts?(x)",
+      "**/?(*.)+(spec|test).ts?(x)"
+    ],
+    "transformIgnorePatterns": [
+      "node_modules/(?!(jest-)?react-native|react-clone-referenced-element|@react-native-community|expo(nent)?|@expo(nent)?/.*|react-navigation|@react-navigation/.*|@unimodules/.*|sentry-expo|native-base)",
+      "./e2e/"
+    ],
+    "moduleFileExtensions": [
+      "js",
+      "ts",
+      "tsx",
+      "json"
+    ],
+    "globals": {
+      "ts-jest": {
+        "tsConfig": {
+          "jsx": "react"
+        }
+      }
+    }
+  },
+  "detox": {
+    "test-runner": "jest",
+    "runner-config": "e2e/runnerConfig.json",
+    "configurations": {
+      "ios.sim": {
+        "binaryPath": "e2e/bin/Exponent.app",
+        "type": "ios.simulator",
+        "name": "iPhone 7"
+      }
+    }
+  }
+}

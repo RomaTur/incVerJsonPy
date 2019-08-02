@@ -1,0 +1,42 @@
+{
+  "expo": {
+    "name": "app",
+    "description": "app",
+    "slug": "app",
+    "version": "2.1.0",
+    "privacy": "public",
+    "sdkVersion": "33.0.0",
+    "platforms": [
+      "ios",
+      "android"
+    ],
+    "orientation": "portrait",
+    "icon": "./assets/icons/appIcon.png",
+    "splash": {
+      "image": "./assets/images/splashSahalin.png",
+      "resizeMode": "cover",
+      "backgroundColor": "#ffffff"
+    },
+    "primaryColor": "#FF782D",
+    "updates": {
+      "enabled": true,
+      "checkAutomatically": "ON_LOAD",
+      "fallbackToCacheTimeout": 30000
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "---",
+      "buildNumber": "17"
+    },
+    "android": {
+      "package": "---",
+      "versionCode": 17,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/icons/androidLaunchIcon/eps_icon_front.png"
+      }
+    }
+  }
+}
