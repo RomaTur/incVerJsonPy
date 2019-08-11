@@ -153,9 +153,119 @@ def major():
 
 
 ############################################################
+# --build --circuit
+# меняются абсолютно все поля, но нужно выбрать дополнительный файл - csp / sahalin
+if args.build and args.circuit:
+    if answers.get('upgrade') == 'patch':
+        patch()  # version, expo.version  - выбор circuit реализован
+
+         # buildNumber, versionCode - выбор файла
+        if replies.get('circuit') == 'csp':
+            os.system('echo build csp')
+            with open('appCsp.json', 'r+') as csp:
+                csp_file = json.load(csp)
+
+                c1 = csp_file['expo']['ios']['buildNumber']
+                c2 = csp_file['expo']['android']['versionCode']
+
+                csp_file['expo']['ios']['buildNumber'] = int(c1) + 1
+                csp_file['expo']['android']['versionCode'] = int(c2) + 1
+                csp.seek(0)
+                json.dump(csp_file, csp, indent=4)
+                csp.truncate()
+
+        elif replies.get('circuit') == 'sahalin':
+            os.system('echo build sahalin')
+            with open('appSahalin.json', 'r+') as sahalin:
+                sah_file = json.load(sahalin)
+
+                s1 = sah_file['expo']['ios']['buildNumber']
+                s2 = sah_file['expo']['android']['versionCode']
+
+                sah_file['expo']['ios']['buildNumber'] = int(s1) + 1
+                sah_file['expo']['android']['versionCode'] = int(s2) + 1
+                sahalin.seek(0)
+                json.dump(sah_file, sahalin, indent=4)
+                sahalin.truncate()
+
+    if answers.get('upgrade') == 'minor':
+        minor()
+        # buildNumber, versionCode - выбор файла
+        if replies.get('circuit') == 'csp':
+            os.system('echo build csp')
+            with open('appCsp.json', 'r+') as csp:
+                csp_file = json.load(csp)
+
+                c1 = csp_file['expo']['ios']['buildNumber']
+                c2 = csp_file['expo']['android']['versionCode']
+
+                csp_file['expo']['ios']['buildNumber'] = int(c1) + 1
+                csp_file['expo']['android']['versionCode'] = int(c2) + 1
+                csp.seek(0)
+                json.dump(csp_file, csp, indent=4)
+                csp.truncate()
+
+        elif replies.get('circuit') == 'sahalin':
+            os.system('echo build sahalin')
+            with open('appSahalin.json', 'r+') as sahalin:
+                sah_file = json.load(sahalin)
+
+                s1 = sah_file['expo']['ios']['buildNumber']
+                s2 = sah_file['expo']['android']['versionCode']
+
+                sah_file['expo']['ios']['buildNumber'] = int(s1) + 1
+                sah_file['expo']['android']['versionCode'] = int(s2) + 1
+                sahalin.seek(0)
+                json.dump(sah_file, sahalin, indent=4)
+                sahalin.truncate()
+
+    if answers.get('upgrade') == 'major':
+        major()
+        # buildNumber, versionCode - выбор файла
+        if replies.get('circuit') == 'csp':
+            os.system('echo build csp')
+            with open('appCsp.json', 'r+') as csp:
+                csp_file = json.load(csp)
+
+                c1 = csp_file['expo']['ios']['buildNumber']
+                c2 = csp_file['expo']['android']['versionCode']
+
+                csp_file['expo']['ios']['buildNumber'] = int(c1) + 1
+                csp_file['expo']['android']['versionCode'] = int(c2) + 1
+                csp.seek(0)
+                json.dump(csp_file, csp, indent=4)
+                csp.truncate()
+
+        elif replies.get('circuit') == 'sahalin':
+            os.system('echo build sahalin')
+            with open('appSahalin.json', 'r+') as sahalin:
+                sah_file = json.load(sahalin)
+
+                s1 = sah_file['expo']['ios']['buildNumber']
+                s2 = sah_file['expo']['android']['versionCode']
+
+                sah_file['expo']['ios']['buildNumber'] = int(s1) + 1
+                sah_file['expo']['android']['versionCode'] = int(s2) + 1
+                sahalin.seek(0)
+                json.dump(sah_file, sahalin, indent=4)
+                sahalin.truncate()
+
+
+# --bundle --circuit
+# меняется version, expo.version
+elif args.bundle and args.circuit:
+    if answers.get('upgrade') == 'patch':
+        patch()  # version, expo.version  - выбор circuit реализован, как и в других ниже
+
+    if answers.get('upgrade') == 'minor':
+        minor()
+
+    if answers.get('upgrade') == 'major':
+        major()
+
 # --build
 # меняется version(package.json), buildNumber, versionCode и в sahalin и csp
-if args.build and not args.circuit:
+elif args.build and not args.circuit:
     os.system('echo build csp and sahalin')
     patch_update('appCsp.json')  # expo.version  - csp
     patch_update('appSahalin.json')  # expo.version - sahalin
@@ -194,8 +304,10 @@ elif args.bundle and not args.circuit:
         major_update('package.json')
         major_update('appCsp.json')  # expo.version  - csp
         major_update('appSahalin.json')  # expo.version - sahalin
+
     # =========================================================
     # сравнение версий между собой выбор в сторону наибольшего
+
     result_app = [file for file in os.listdir(path) if file.startswith('app')]
     expo = []
     number = []
@@ -203,10 +315,9 @@ elif args.bundle and not args.circuit:
     for js in result_app:
         with open(os.path.join(path, js), 'r+') as json_file:
             json_text = json.load(json_file)
-            # берем версию expo.version сейчас, используем для сравнения в коде ниже
             expo.append(json_text['expo']['version'])
             number.append(json_text['expo']['ios']['buildNumber'])
-            android.append(int(json_text['expo']['android']['versionCode']))
+            android.append(str(json_text['expo']['android']['versionCode']))
             same_path = number + android
             json_text['expo']['ios']['buildNumber'] = max(same_path)
             json_text['expo']['android']['versionCode'] = max(same_path)
@@ -214,143 +325,48 @@ elif args.bundle and not args.circuit:
             json.dump(json_text, json_file, indent=4)
             json_file.truncate()
 
-        with open('/Users/ana/Desktop/package.json', 'r+') as pack:
+    with open('/Users/ana/Desktop/incVerJsonPy/package.json', 'r+') as p:
+        fil = json.load(p)
+        expo.append(fil['version'])
+        p.seek(0)
+        json.dump(fil, p, indent=4)
+        p.truncate()
+
+    result_app = [file for file in os.listdir(path) if file.startswith('app')]
+    for js in result_app:
+        with open(os.path.join(path, js), 'r+') as pack:
             package = json.load(pack)
-            v = []
-            ver = package['version']
-            v.append(ver)
+            ver = package['expo']['version']
             m2 = max(expo)
-            if m2 > v[0]:
-                v[0] = m2
+            if m2 > ver:
+                ver = m2
+                package['expo']['version'] = m2
             else:
-                m2 = v[0]
-            package['version'] = v[0]
+                m2 = ver
+                package['expo']['version'] = m2
             pack.seek(0)
             json.dump(package, pack, indent=4)
             pack.truncate()
-    # =========================================================
+    with open('/Users/ana/Desktop/incVerJsonPy/package.json', 'r+') as p:
+        fil = json.load(p)
+        fil['version'] = max(expo)
+        p.seek(0)
+        json.dump(fil, p, indent=4)
+        p.truncate()
 
-# --build --circuit
-# меняются абсолютно все поля, но нужно выбрать дополнительный файл - csp / sahalin
-elif args.build and args.circuit:
-    if answers.get('upgrade') == 'patch':
-        patch()  # version, expo.version  - выбор circuit реализован
-
-         # buildNumber, versionCode - выбор файла
-        if replies.get('circuit') == 'csp':
-            os.system('echo build csp')
-            with open('appCsp.json', 'r+') as csp:
-                csp_file = json.load(csp)
-
-                c1 = csp_file['expo']['ios']['buildNumber']
-                c2 = csp_file['expo']['android']['versionCode']
-
-                csp_file['expo']['ios']['buildNumber'] = int(c1) + 1
-                csp_file['expo']['android']['versionCode'] = int(c2) + 1
-                csp.seek(0)
-                json.dump(csp_file, csp, indent=4)
-                csp.truncate()
-
-        elif replies.get('circuit') == 'sahalin':
-            os.system('echo build sahalin')
-            with open('/Users/ana/Desktop/appSahalin.json', 'r+') as sahalin:
-                sah_file = json.load(sahalin)
-
-                s1 = sah_file['expo']['ios']['buildNumber']
-                s2 = sah_file['expo']['android']['versionCode']
-
-                sah_file['expo']['ios']['buildNumber'] = int(s1) + 1
-                sah_file['expo']['android']['versionCode'] = int(s2) + 1
-                sahalin.seek(0)
-                json.dump(sah_file, sahalin, indent=4)
-                sahalin.truncate()
-
-    if answers.get('upgrade') == 'minor':
-        minor()
-        # buildNumber, versionCode - выбор файла
-        if replies.get('circuit') == 'csp':
-            os.system('echo build csp')
-            with open('/Users/ana/Desktop/appCsp.json', 'r+') as csp:
-                csp_file = json.load(csp)
-
-                c1 = csp_file['expo']['ios']['buildNumber']
-                c2 = csp_file['expo']['android']['versionCode']
-
-                csp_file['expo']['ios']['buildNumber'] = int(c1) + 1
-                csp_file['expo']['android']['versionCode'] = int(c2) + 1
-                csp.seek(0)
-                json.dump(csp_file, csp, indent=4)
-                csp.truncate()
-
-        elif replies.get('circuit') == 'sahalin':
-            os.system('echo build sahalin')
-            with open('/Users/ana/Desktop/appSahalin.json', 'r+') as sahalin:
-                sah_file = json.load(sahalin)
-
-                s1 = sah_file['expo']['ios']['buildNumber']
-                s2 = sah_file['expo']['android']['versionCode']
-
-                sah_file['expo']['ios']['buildNumber'] = int(s1) + 1
-                sah_file['expo']['android']['versionCode'] = int(s2) + 1
-                sahalin.seek(0)
-                json.dump(sah_file, sahalin, indent=4)
-                sahalin.truncate()
-
-    if answers.get('upgrade') == 'major':
-        major()
-        # buildNumber, versionCode - выбор файла
-        if replies.get('circuit') == 'csp':
-            os.system('echo build csp')
-            with open('/Users/ana/Desktop/appCsp.json', 'r+') as csp:
-                csp_file = json.load(csp)
-
-                c1 = csp_file['expo']['ios']['buildNumber']
-                c2 = csp_file['expo']['android']['versionCode']
-
-                csp_file['expo']['ios']['buildNumber'] = int(c1) + 1
-                csp_file['expo']['android']['versionCode'] = int(c2) + 1
-                csp.seek(0)
-                json.dump(csp_file, csp, indent=4)
-                csp.truncate()
-
-        elif replies.get('circuit') == 'sahalin':
-            os.system('echo build sahalin')
-            with open('/Users/ana/Desktop/appSahalin.json', 'r+') as sahalin:
-                sah_file = json.load(sahalin)
-
-                s1 = sah_file['expo']['ios']['buildNumber']
-                s2 = sah_file['expo']['android']['versionCode']
-
-                sah_file['expo']['ios']['buildNumber'] = int(s1) + 1
-                sah_file['expo']['android']['versionCode'] = int(s2) + 1
-                sahalin.seek(0)
-                json.dump(sah_file, sahalin, indent=4)
-                sahalin.truncate()
-
-
-# --bundle --circuit
-# меняется version, expo.version
-elif args.bundle and args.circuit:
-    if answers.get('upgrade') == 'patch':
-        patch()  # version, expo.version  - выбор circuit реализован, как и в других ниже
-
-    if answers.get('upgrade') == 'minor':
-        minor()
-
-    if answers.get('upgrade') == 'major':
-        major()
 else:
     raise ValueError('failure with command or some key is missing')
 
+    # =========================================================
 
 # Далее выводится итог:
-with open('/Users/ana/Desktop/appSahalin.json', 'r+') as apsahalin:
+with open('appSahalin.json', 'r+') as apsahalin:
     sah_file = json.load(apsahalin)
 
     s1 = sah_file['expo']['ios']['buildNumber']
     s2 = sah_file['expo']['version']
 
-with open('/Users/ana/Desktop/appCsp.json', 'r+') as apcsp:
+with open('appCsp.json', 'r+') as apcsp:
     sah_file = json.load(apcsp)
 
     a1 = sah_file['expo']['ios']['buildNumber']

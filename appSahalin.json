@@ -3,7 +3,7 @@
         "name": "app",
         "description": "app",
         "slug": "app",
-        "version": "2.1.0",
+        "version": "5.4.5",
         "privacy": "public",
         "sdkVersion": "33.0.0",
         "platforms": [
@@ -38,5 +38,6 @@
                 "foregroundImage": "./assets/icons/androidLaunchIcon/eps_icon_front.png"
             }
         }
-    }
+    },
+    "version": "2.8.0"
 }
