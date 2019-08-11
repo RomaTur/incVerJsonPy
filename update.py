@@ -28,6 +28,9 @@ parser.add_argument('--circuit', action='store', nargs='?', const='c', dest='cir
                     help='important to update for either appCsp or appSahalin')
 args = parser.parse_args()
 
+# path = os.path.dirname('/Users/ana/Desktop/incVerJsonPy')
+path = os.path.abspath(os.path.dirname(__file__))
+
 
 # Базовые обновления version & expo.version
 # from 2.1.0 to 2.1.1
@@ -54,24 +57,33 @@ def patch_update(occurred_file):
 
 # from 2.1.0 to 2.2.0
 def minor_update(occurred_file):
-    if occurred_file == 'appCsp.json' or occurred_file == 'appSahalin.json':
+    if occurred_file == 'appCsp.json':
         with open(occurred_file, 'r+') as file:
             data = json.load(file)
-            exclude_second = data['expo']['version'][-3:]
-            another_to_change = str(int(exclude_second) + 1)
+            exclude_second = data['expo']['version'][2:-2]
+            another_to_change = str(float(exclude_second) + 1)
             data['expo']['version'] = data['expo']['version'][:2] + another_to_change
             file.seek(0)
             json.dump(data, file, indent=4)
             file.truncate()
+    elif occurred_file == 'appSahalin.json':
+        with open(occurred_file, 'r+') as f:
+            d = json.load(f)
+            exclude_second = d['expo']['version'][2:-2]
+            another_to_change = str(float(exclude_second) + 1)
+            d['expo']['version'] = d['expo']['version'][:2] + another_to_change
+            f.seek(0)
+            json.dump(d, f, indent=4)
+            f.truncate()
     else:
         with open(occurred_file, 'r+') as pack:
             data = json.load(pack)
             exclude_first = data['version'][-3:]
             last_to_change = str(float(exclude_first) + 1)
             data['version'] = data['version'][:2] + last_to_change
-            package.seek(0)
-            json.dump(data, package, indent=4)
-            package.truncate()
+            pack.seek(0)
+            json.dump(data, pack, indent=4)
+            pack.truncate()
 
 
 # from 2.1.0 to 3.1.0
@@ -83,7 +95,7 @@ def major_update(occurred_file):
             another_to_change = str(int(exclude_second) + 1)
             data['expo']['version'] = data['version'][-4:] + another_to_change
             file_js.seek(0)
-            json.dump(data, file_js)
+            json.dump(data, file_js, indent=4)
             file_js.truncate()
 
     else:
@@ -93,8 +105,9 @@ def major_update(occurred_file):
             last_to_change = str(int(exclude_first) + 1)
             data['version'] = data['version'][-4:] + last_to_change
             pack.seek(0)
-            json.dump(data, pack)
+            json.dump(data, pack, indent=4)
             pack.truncate()
+
 
 # pretty choose for options
 choosing = [
@@ -115,10 +128,12 @@ def patch():
     # update anyway
     patch_update('/Users/ana/Desktop/package.json')
     if replies.get('circuit') == 'csp':
+        os.system('echo build csp')
         # обновление версии expo.version patch
         patch_update('/Users/ana/Desktop/appCsp.json')
 
     if replies.get('circuit') == 'sahalin':
+        os.system('echo build sahalin')
         # обновление версии expo.version patch
         patch_update('appSahalin.json')
 
@@ -127,10 +142,12 @@ def minor():
     # update anyway
     minor_update('/Users/ana/Desktop/package.json')
     if replies.get('circuit') == 'csp':
+        os.system('echo build csp')
         # обновление версии expo.version minor
         minor_update('appCsp.json')
 
     if replies.get('circuit') == 'sahalin':
+        os.system('echo build sahalin')
         # обновление версии expo.version minor
         patch_update('appSahalin.json')
 
@@ -138,10 +155,12 @@ def minor():
 def major():
     major_update('package.json')
     if replies.get('circuit') == 'csp':
+        os.system('echo build csp')
         # обновление версии expo.version minor
         major_update('appCsp.json')
 
     if replies.get('circuit') == 'sahalin':
+        os.system('echo build sahalin')
         # обновление версии expo.version minor
         major_update('appSahalin.json')
 
@@ -156,6 +175,7 @@ if args.build and args.circuit:
 
          # buildNumber, versionCode - выбор файла
         if replies.get('circuit') == 'csp':
+            os.system('echo build csp')
             with open('/Users/ana/Desktop/appCsp.json', 'r+') as csp:
                 csp_file = json.load(csp)
 
@@ -165,10 +185,11 @@ if args.build and args.circuit:
                 csp_file['expo']['ios']['buildNumber'] = int(c1) + 1
                 csp_file['expo']['android']['versionCode'] = int(c2) + 1
                 csp.seek(0)
-                json.dump(csp_file, csp)
+                json.dump(csp_file, csp, indent=4)
                 csp.truncate()
 
         elif replies.get('circuit') == 'sahalin':
+            os.system('echo build sahalin')
             with open('/Users/ana/Desktop/sahalinCsp.json', 'r+') as sahalin:
                 sah_file = json.load(sahalin)
 
@@ -178,13 +199,14 @@ if args.build and args.circuit:
                 sah_file['expo']['ios']['buildNumber'] = int(s1) + 1
                 sah_file['expo']['android']['versionCode'] = int(s2) + 1
                 sahalin.seek(0)
-                json.dump(sah_file, sahalin)
+                json.dump(sah_file, sahalin, indent=4)
                 sahalin.truncate()
 
     if answers.get('upgrade') == 'minor':
         minor()
         # buildNumber, versionCode - выбор файла
         if replies.get('circuit') == 'csp':
+            os.system('echo build csp')
             with open('/Users/ana/Desktop/appCsp.json', 'r+') as csp:
                 csp_file = json.load(csp)
 
@@ -194,10 +216,11 @@ if args.build and args.circuit:
                 csp_file['expo']['ios']['buildNumber'] = int(c1) + 1
                 csp_file['expo']['android']['versionCode'] = int(c2) + 1
                 csp.seek(0)
-                json.dump(csp_file, csp)
+                json.dump(csp_file, csp, indent=4)
                 csp.truncate()
 
         elif replies.get('circuit') == 'sahalin':
+            os.system('echo build sahalin')
             with open('/Users/ana/Desktop/sahalinCsp.json', 'r+') as sahalin:
                 sah_file = json.load(sahalin)
 
@@ -207,13 +230,14 @@ if args.build and args.circuit:
                 sah_file['expo']['ios']['buildNumber'] = int(s1) + 1
                 sah_file['expo']['android']['versionCode'] = int(s2) + 1
                 sahalin.seek(0)
-                json.dump(sah_file, sahalin)
+                json.dump(sah_file, sahalin, indent=4)
                 sahalin.truncate()
 
     if answers.get('upgrade') == 'major':
         major()
         # buildNumber, versionCode - выбор файла
         if replies.get('circuit') == 'csp':
+            os.system('echo build csp')
             with open('/Users/ana/Desktop/appCsp.json', 'r+') as csp:
                 csp_file = json.load(csp)
 
@@ -223,11 +247,12 @@ if args.build and args.circuit:
                 csp_file['expo']['ios']['buildNumber'] = int(c1) + 1
                 csp_file['expo']['android']['versionCode'] = int(c2) + 1
                 csp.seek(0)
-                json.dump(csp_file, csp)
+                json.dump(csp_file, csp, indent=4)
                 csp.truncate()
 
         elif replies.get('circuit') == 'sahalin':
-            with open('/Users/ana/Desktop/sahalinCsp.json', 'r+') as sahalin:
+            os.system('echo build sahalin')
+            with open('/Users/ana/Desktop/appSahalin.json', 'r+') as sahalin:
                 sah_file = json.load(sahalin)
 
                 s1 = sah_file['expo']['ios']['buildNumber']
@@ -236,17 +261,17 @@ if args.build and args.circuit:
                 sah_file['expo']['ios']['buildNumber'] = int(s1) + 1
                 sah_file['expo']['android']['versionCode'] = int(s2) + 1
                 sahalin.seek(0)
-                json.dump(sah_file, sahalin)
+                json.dump(sah_file, sahalin, indent=4)
                 sahalin.truncate()
 
 
 # --build
 # меняется version(package.json), buildNumber, versionCode и в sahalin и csp
 elif args.build and not args.circuit:
+    os.system('echo build csp and sahalin')
     patch_update('appCsp.json')  # expo.version  - csp
     patch_update('appSahalin')  # expo.version - sahalin
     # buildNumber, versionCode  - csp & sahalin
-    path = os.path.dirname('/Users/ana/Desktop/incVerJsonPy/update.py')
     result_app = [file for file in os.listdir(path) if file.startswith('app')]
     for js in result_app:
         with open(os.path.join(path, js), 'r+') as json_file:
@@ -266,16 +291,19 @@ elif args.build and not args.circuit:
 # меняется только version, expo.version во всех файлах
 elif args.bundle and not args.circuit:
     if answers.get('upgrade') == 'patch':
+        os.system('echo bundle csp and sahalin')
         patch_update('package.json')
         patch_update('appCsp.json')  # expo.version  - csp
         patch_update('appSahalin')  # expo.version - sahalin
 
     if answers.get('upgrade') == 'minor':
+        os.system('echo bundle csp and sahalin')
         minor_update('package.json')
         minor_update('appCsp.json')  # expo.version  - csp
-        minor_update('appSahalin')  # expo.version - sahalin
+        minor_update('appSahalin.json')  # expo.version - sahalin
 
     if answers.get('upgrade') == 'major':
+        os.system('echo bundle csp and sahalin')
         major_update('package.json')
         major_update('appCsp.json')  # expo.version  - csp
         major_update('appSahalin')  # expo.version - sahalin
@@ -297,11 +325,12 @@ elif args.bundle and args.circuit:
         major()
         major_update('appCsp.json')  # expo.version  - csp
         major_update('appSahalin')  # expo.version - sahalin
+else:
+    raise ValueError('failure with command or some key is missing')
 
-# P.S
+# =========================================================
 # сравнение версий между собой выбор в сторону наибольшего
-path = os.path.dirname('/Users/ana/Desktop/incVerJsonPy/update.py')
-result_app = [file for file in os.listdir(path) if file.endswith('.json')]
+result_app = [file for file in os.listdir(path) if file.startswith('app')]
 expo = []
 number = []
 android = []
@@ -310,15 +339,15 @@ for js in result_app:
         json_text = json.load(json_file)
         expo.append(json_text['expo']['version'])
         number.append(json_text['expo']['ios']['buildNumber'])
-        android.append(json_text['expo']['android']['versionCode'])
-        same_path = max(number + android)
-        json_text['expo']['ios']['buildNumber'] = same_path
-        json_text['expo']['android']['versionCode'] = same_path
+        android.append(str(json_text['expo']['android']['versionCode']))
+        same_path = number + android
+        json_text['expo']['ios']['buildNumber'] = max(same_path)
+        json_text['expo']['android']['versionCode'] = max(same_path)
         json_file.seek(0)
-        json.dump(json_text, json_file)
+        json.dump(json_text, json_file, indent=4)
         json_file.truncate()
 
-    with open('/Users/ana/Desktop/incVerJsonPy/package.json') as pack:
+    with open('/Users/ana/Desktop/package.json', 'r+') as pack:
         package = json.load(pack)
         v = []
         ver = package['version']
@@ -330,5 +359,22 @@ for js in result_app:
             m2 = v[0]
         package['version'] = v[0]
         pack.seek(0)
-        json.dump(package, pack)
-        json_file.truncate()
+        json.dump(package, pack, indent=4)
+        pack.truncate()
+# =========================================================
+
+# Далее выводится итог:
+with open('/Users/ana/Desktop/appSahalin.json', 'r+') as apsahalin:
+    sah_file = json.load(apsahalin)
+
+    s1 = sah_file['expo']['ios']['buildNumber']
+    s2 = sah_file['expo']['version']
+
+with open('/Users/ana/Desktop/appCsp.json', 'r+') as apcsp:
+    sah_file = json.load(apcsp)
+
+    a1 = sah_file['expo']['ios']['buildNumber']
+    a2 = sah_file['expo']['version']
+
+print('Update info:\n sahalin: v{} | build {} \n csp: v{} | build {}'.format(s2, s1, a2, a1))
+print('Get builds https://expo.io/builds')
