@@ -12,8 +12,10 @@ parser.add_argument('--circuit', action='store', nargs='?', const='c', dest='cir
                     help='important to update for either appCsp or appSahalin')
 args = parser.parse_args()
 
+
 # path = os.path.dirname('/Users/ana/Desktop/incVerJsonPy')
 path = os.path.abspath(os.path.dirname(__file__))
+result_files = [file for file in os.listdir(path) if file.startswith('app')]
 
 
 # Базовые обновления version & expo.version
@@ -152,6 +154,70 @@ def major():
         major_update('appSahalin.json')
 
 
+#+++++++++++++++++++++++++++++++++++++++
+p_special_fields = []
+c_special_fields = []
+s_special_fields = []
+# expo version & version
+def checking():
+    with open('package.json', 'r+') as pack:
+        package = json.load(pack)
+        p_version = []
+        c_expo = []
+        s_expo = []
+        p_version.append(package['version'])
+        with open('appCsp.json', 'r') as cs:
+            new = json.load(cs)
+            c_expo.append(new['expo']['version'])
+            c_special_fields.append(new['expo']['ios']['buildNumber'])
+            c_special_fields.append(int(new['expo']['android']['versionCode']))
+            with open('appSahalin.json', 'r') as sa:
+                sah = json.load(sa)
+                s_expo.append(sah['expo']['version'])
+                s_special_fields.append(sah['expo']['ios']['buildNumber'])
+                s_special_fields.append(int(sah['expo']['android']['versionCode']))
+        # version / expo.version change
+        find_common_version = max(p_version + c_expo + s_expo)
+        find_common_special = max(s_special_fields + c_special_fields)
+        package['version'] = find_common_version
+        pack.seek(0)
+        json.dump(package, pack, indent=4)
+        pack.truncate()
+        with open('appCsp.json', 'r+') as cs_w:
+            new_w = json.load(cs_w)
+            new_w['expo']['version'] = find_common_version
+            cs_w.seek(0)
+            json.dump(new_w, cs_w, indent=4)
+            cs_w.truncate()
+        with open('appSahalin.json', 'r+') as sa_w:
+            to_write = json.load(sa_w)
+            to_write['expo']['version'] = find_common_version
+            sa_w.seek(0)
+            json.dump(to_write, sa_w, indent=4)
+            sa_w.truncate()
+
+    if args.circuit:
+        if replies.get('circuit') == 'csp':
+            with open('appCsp.json', 'r+') as main:
+                csp_main = json.load(main)
+                if csp_main['expo']['ios']['buildNumber'] < find_common_special:
+                    csp_main['expo']['ios']['buildNumber'] = str(find_common_special)
+                elif csp_main['expo']['android']['versionCode'] > find_common_special:
+                     find_common_special = str(csp_main['expo']['android']['versionCode'])
+                main.seek(0)
+                json.dump(csp_main, main, indent=4)
+                main.truncate()
+        if replies.get('circuit') == 'sahalin':
+            with open('appSahalin.json', 'r+') as m:
+                sah_m = json.load(m)
+                if sah_m['expo']['ios']['buildNumber'] < find_common_special:
+                    sah_m['expo']['ios']['buildNumber'] = find_common_special
+                elif sah_m['expo']['android']['versionCode'] > find_common_special:
+                    find_common_special = sah_m['expo']['android']['versionCode']
+                m.seek(0)
+                json.dump(sah_m, m, indent=4)
+                m.truncate()
+
 ############################################################
 # --build --circuit
 # меняются абсолютно все поля, но нужно выбрать дополнительный файл - csp / sahalin
@@ -159,7 +225,7 @@ if args.build and args.circuit:
     if answers.get('upgrade') == 'patch':
         patch()  # version, expo.version  - выбор circuit реализован
 
-         # buildNumber, versionCode - выбор файла
+        # buildNumber, versionCode - выбор файла
         if replies.get('circuit') == 'csp':
             os.system('echo build csp')
             with open('appCsp.json', 'r+') as csp:
@@ -170,6 +236,7 @@ if args.build and args.circuit:
 
                 csp_file['expo']['ios']['buildNumber'] = int(c1) + 1
                 csp_file['expo']['android']['versionCode'] = int(c2) + 1
+
                 csp.seek(0)
                 json.dump(csp_file, csp, indent=4)
                 csp.truncate()
@@ -249,23 +316,23 @@ if args.build and args.circuit:
                 sahalin.seek(0)
                 json.dump(sah_file, sahalin, indent=4)
                 sahalin.truncate()
-
+    checking()
 
 # --bundle --circuit
 # меняется version, expo.version
 elif args.bundle and args.circuit:
     if answers.get('upgrade') == 'patch':
         patch()  # version, expo.version  - выбор circuit реализован, как и в других ниже
-
     if answers.get('upgrade') == 'minor':
         minor()
-
     if answers.get('upgrade') == 'major':
         major()
+    checking()
+
 
 # --build
 # меняется version(package.json), buildNumber, versionCode и в sahalin и csp
-elif args.build and not args.circuit:
+if args.build and not args.circuit:
     os.system('echo build csp and sahalin')
     patch_update('appCsp.json')  # expo.version  - csp
     patch_update('appSahalin.json')  # expo.version - sahalin
@@ -283,7 +350,7 @@ elif args.build and not args.circuit:
                 json_file.seek(0)
                 json.dump(json_text, json_file, indent=4)
                 json_file.truncate()
-
+    checking()
 #  --bundle
 # меняется только version, expo.version во всех файлах
 elif args.bundle and not args.circuit:
@@ -304,60 +371,11 @@ elif args.bundle and not args.circuit:
         major_update('package.json')
         major_update('appCsp.json')  # expo.version  - csp
         major_update('appSahalin.json')  # expo.version - sahalin
+    # check_if_build_bundle()
+    checking()
+# else:
+#     raise ValueError('failure with command or some key is missing')
 
-    # =========================================================
-    # сравнение версий между собой выбор в сторону наибольшего
-
-    result_app = [file for file in os.listdir(path) if file.startswith('app')]
-    expo = []
-    number = []
-    android = []
-    for js in result_app:
-        with open(os.path.join(path, js), 'r+') as json_file:
-            json_text = json.load(json_file)
-            expo.append(json_text['expo']['version'])
-            number.append(json_text['expo']['ios']['buildNumber'])
-            android.append(str(json_text['expo']['android']['versionCode']))
-            same_path = number + android
-            json_text['expo']['ios']['buildNumber'] = max(same_path)
-            json_text['expo']['android']['versionCode'] = max(same_path)
-            json_file.seek(0)
-            json.dump(json_text, json_file, indent=4)
-            json_file.truncate()
-
-    with open('/Users/ana/Desktop/incVerJsonPy/package.json', 'r+') as p:
-        fil = json.load(p)
-        expo.append(fil['version'])
-        p.seek(0)
-        json.dump(fil, p, indent=4)
-        p.truncate()
-
-    result_app = [file for file in os.listdir(path) if file.startswith('app')]
-    for js in result_app:
-        with open(os.path.join(path, js), 'r+') as pack:
-            package = json.load(pack)
-            ver = package['expo']['version']
-            m2 = max(expo)
-            if m2 > ver:
-                ver = m2
-                package['expo']['version'] = m2
-            else:
-                m2 = ver
-                package['expo']['version'] = m2
-            pack.seek(0)
-            json.dump(package, pack, indent=4)
-            pack.truncate()
-    with open('/Users/ana/Desktop/incVerJsonPy/package.json', 'r+') as p:
-        fil = json.load(p)
-        fil['version'] = max(expo)
-        p.seek(0)
-        json.dump(fil, p, indent=4)
-        p.truncate()
-
-else:
-    raise ValueError('failure with command or some key is missing')
-
-    # =========================================================
 
 # Далее выводится итог:
 with open('appSahalin.json', 'r+') as apsahalin:

@@ -1,6 +1,6 @@
 {
     "main": "node_modules/expo/AppEntry.js",
-    "version": "5.2.1",
+    "version": "2.1.0",
     "scripts": {
         "start": "expo start --config ./appCsp.json",
         "android": "expo start --android --config ./appCsp.json",
