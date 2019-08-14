@@ -154,11 +154,11 @@ def major():
         major_update('appSahalin.json')
 
 
-#+++++++++++++++++++++++++++++++++++++++
 p_special_fields = []
 c_special_fields = []
 s_special_fields = []
-# expo version & version
+
+
 def checking():
     with open('package.json', 'r+') as pack:
         package = json.load(pack)
@@ -218,7 +218,7 @@ def checking():
                 json.dump(sah_m, m, indent=4)
                 m.truncate()
 
-############################################################
+
 # --build --circuit
 # меняются абсолютно все поля, но нужно выбрать дополнительный файл - csp / sahalin
 if args.build and args.circuit:

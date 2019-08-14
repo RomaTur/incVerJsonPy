@@ -3,10 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="ba54e927-b6ea-462b-88cc-367435ee1032" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/appCsp.json" beforeDir="false" afterPath="$PROJECT_DIR$/appCsp.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/appSahalin.json" beforeDir="false" afterPath="$PROJECT_DIR$/appSahalin.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/update.py" beforeDir="false" afterPath="$PROJECT_DIR$/update.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
