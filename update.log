@@ -1,24 +1,8 @@
 import logging
-import update
 
 
-def main():
+logging.basicConfig(filename="update.log", level=logging.INFO)
+logging.info('Started proccess')
+logging.info('Done')
 
-    # create the logging file handler
-    logger = logging.getLogger("app")
-    logger.setLevel(logging.INFO)
 
-    fh = logging.FileHandler("update.log")
-
-    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-    fh.setFormatter(formatter)
-
-    # add handler to logger object
-    logger.addHandler(fh)
-
-    logger.info("Started")
-    result = update.args.build
-    logger.info("Success")
-
-if __name__ == "__main__":
-    main()

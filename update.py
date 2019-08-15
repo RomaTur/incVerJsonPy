@@ -116,7 +116,8 @@ if args.circuit:
                       message='Circuit',
                       choices=['csp', 'sahalin'], ), ]
     replies = inquirer.prompt(additional_choose)
-
+elif not args:
+    raise ValueError('no key was found or you boy just strange')
 
 # Functions below are to complete actions if there is --circuit
 def patch():
@@ -342,14 +343,13 @@ if args.build and not args.circuit:
         with open(os.path.join(path, js), 'r+') as json_file:
             json_text = json.load(json_file)
             versions = []
-            versions.append(json_text["expo"]["ios"]['buildNumber'])
-            versions.append(json_text["expo"]["android"]['versionCode'])
-            for i in versions:
-                json_text["expo"]["ios"]['buildNumber'] = int(i) + 1
-                json_text["expo"]["android"]['versionCode'] = int(i) + 1
-                json_file.seek(0)
-                json.dump(json_text, json_file, indent=4)
-                json_file.truncate()
+            versions.append(int(json_text["expo"]["ios"]['buildNumber']))
+            versions.append(int(json_text["expo"]["android"]['versionCode']))
+            json_text["expo"]["ios"]['buildNumber'] = max(versions)
+            json_text["expo"]["android"]['versionCode'] = str(max(versions))
+            json_file.seek(0)
+            json.dump(json_text, json_file, indent=4)
+            json_file.truncate()
     checking()
 #  --bundle
 # меняется только version, expo.version во всех файлах
@@ -373,8 +373,6 @@ elif args.bundle and not args.circuit:
         major_update('appSahalin.json')  # expo.version - sahalin
     # check_if_build_bundle()
     checking()
-# else:
-#     raise ValueError('failure with command or some key is missing')
 
 
 # Далее выводится итог:

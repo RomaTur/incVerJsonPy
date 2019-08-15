@@ -1,6 +1,9 @@
-import setuptools
+from setuptools import setup, find_packages
 
-setuptools.setup(name='inquirer',
-      version='2.6.3',
-      packages=['inquirer'],
-      )
+setup(
+      name='update',
+      version='',
+      packages=find_packages(),
+      python_requires='>=3.0.*',
+      install_requires=['inquirer==2.6.3']
+)
