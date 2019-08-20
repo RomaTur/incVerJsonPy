@@ -3,7 +3,7 @@
         "name": "app",
         "description": "app",
         "slug": "app",
-        "version": "4.2.22",
+        "version": "6.7.38",
         "privacy": "public",
         "sdkVersion": "33.0.0",
         "platforms": [
@@ -29,11 +29,11 @@
         "ios": {
             "supportsTablet": false,
             "bundleIdentifier": "---",
-            "buildNumber": 21
+            "buildNumber": 33
         },
         "android": {
             "package": "---",
-            "versionCode": "21",
+            "versionCode": "33",
             "adaptiveIcon": {
                 "foregroundImage": "./assets/icons/androidLaunchIcon/eps_icon_front.png"
             }

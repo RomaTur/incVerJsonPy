@@ -58,8 +58,10 @@ def upd_version_with_circuit():
 
         if args.circuit:
             if replies.get('circuit') == 'csp':
+                os.system('echo bundle csp')
                 versioning('appCsp.json', 2)
             elif replies.get('circuit') == 'sahalin':
+                os.system('echo bundle sahalin')
                 versioning('appSahalin.json', 2)
 
     if answers.get('upgrade') == 'minor':
@@ -67,8 +69,10 @@ def upd_version_with_circuit():
 
         if args.circuit:
             if replies.get('circuit') == 'csp':
+                os.system('echo bundle csp ')
                 versioning('appCsp.json', 1)
             elif replies.get('circuit') == 'sahalin':
+                os.system('echo bundle sahalin')
                 versioning('appSahalin.json', 1)
 
     if answers.get('upgrade') == 'major':
@@ -76,8 +80,10 @@ def upd_version_with_circuit():
 
         if args.circuit:
             if replies.get('circuit') == 'csp':
+                os.system('echo bundle csp ')
                 versioning('appCsp.json', 0)
             elif replies.get('circuit') == 'sahalin':
+                os.system('echo bundle sahalin')
                 versioning('appSahalin.json', 0)
 
 # Обновление buildNumber
@@ -124,7 +130,39 @@ def check():
         pack.truncate()
 
         special = max(s_special_fields + c_special_fields)
-        # присваивание expo.version, buildNumber, versionCode того же наибольшего значения
+
+    # если есть circuit, изменение версии  buildNumber или versionCode
+    # в специально выбранном файле в большую сторону
+    if args.circuit:
+        if replies.get('circuit') == 'csp':
+
+            with open('appCsp.json', 'r+') as main:
+                csp_main = json.load(main)
+
+                if csp_main['expo']['ios']['buildNumber'] < special:
+                    csp_main['expo']['ios']['buildNumber'] = special
+
+                elif int(csp_main['expo']['android']['versionCode']) < special:
+                    csp_main['expo']['android']['versionCode'] = str(special)
+                csp_main['expo']['version'] = find_common_version
+                main.seek(0)
+                json.dump(csp_main, main, indent=4)
+                main.truncate()
+
+        if replies.get('circuit') == 'sahalin':
+            with open('appSahalin.json', 'r+') as m:
+                sah_m = json.load(m)
+                if sah_m['expo']['ios']['buildNumber'] < special:
+                    sah_m['expo']['ios']['buildNumber'] = special
+
+                elif int(sah_m['expo']['android']['versionCode']) < special:
+                    sah_m['expo']['android']['versionCode'] = str(special)
+                sah_m['expo']['version'] = find_common_version
+                m.seek(0)
+                json.dump(sah_m, m, indent=4)
+                m.truncate()
+
+    else:
         with open('appCsp.json', 'r+') as cs_w:
             new_w = json.load(cs_w)
             new_w['expo']['version'] = find_common_version
@@ -141,35 +179,6 @@ def check():
             sa_w.seek(0)
             json.dump(to_write, sa_w, indent=4)
             sa_w.truncate()
-
-    # если есть circuit, изменение версии  buildNumber или versionCode
-    # в специально выбранном файле в большую сторону
-    if args.circuit:
-
-        if replies.get('circuit') == 'csp':
-
-            with open('appCsp.json', 'r+') as main:
-                csp_main = json.load(main)
-                if csp_main['expo']['ios']['buildNumber'] < special:
-                    csp_main['expo']['ios']['buildNumber'] = special
-
-                elif csp_main['expo']['android']['versionCode'] < str(special):
-                    csp_main['expo']['android']['versionCode'] = str(csp_main['expo']['android']['versionCode'])
-                main.seek(0)
-                json.dump(csp_main, main, indent=4)
-                main.truncate()
-
-        if replies.get('circuit') == 'sahalin':
-            with open('appSahalin.json', 'r+') as m:
-                sah_m = json.load(m)
-                if sah_m['expo']['ios']['buildNumber'] < special:
-                    sah_m['expo']['ios']['buildNumber'] = special
-
-                elif sah_m['expo']['android']['versionCode'] < special:
-                    sah_m['expo']['android']['versionCode'] = sah_m['expo']['android']['versionCode']
-                m.seek(0)
-                json.dump(sah_m, m, indent=4)
-                m.truncate()
 
 
 # --build --circuit
@@ -229,11 +238,14 @@ elif args.build and not args.circuit:
         versioning('package.json', 0)
         versioning('appCsp.json', 0)  # expo.version  - csp
         versioning('appSahalin.json', 0)  # expo.version - sahalin
+    increase_special_fields('appCsp.json')
+    increase_special_fields('appSahalin.json')
     check()
 
 #  --bundle
 # меняется только version, expo.version во всех файлах
 elif args.bundle and not args.circuit:
+    os.system('echo bundle')
     upd_version_with_circuit()
     check()
 else:
