@@ -110,44 +110,6 @@ def maximum_min_maj():
                         new = json.load(cs)
                         if packaging.version.parse(new['expo']['version']) < packaging.version.parse(package['version']):
                             new['expo']['version'] = package['version']
-                            minor('appCsp.json')
-
-
-                        # else:
-                        #     package['version'] = new['expo']['version']
-                        # cs.seek(0)
-                        # json.dump(new, cs, indent=4)
-                        # cs.truncate()
-                    pack.seek(0)
-                    json.dump(package, pack, indent=4)
-                    pack.truncate()
-            elif replies.get('circuit') == 'sahalin':
-                with open('package.json', 'r+') as pack:
-                    package = json.load(pack)
-                    with open('appSahalin.json', 'r+') as sa:
-                        sah = json.load(sa)
-                        if packaging.version.parse(sah['expo']['version']) < packaging.version.parse(package['version']):
-                            sah['expo']['version'] = package['version']
-                        package['version'] = sah['expo']['version']
-                        sa.seek(0)
-                        json.dump(sah, sa, indent=4)
-                        sa.truncate()
-                    minor('appSahalin.json')
-                    pack.seek(0)
-                    json.dump(package, pack, indent=4)
-                    pack.truncate()
-
-    elif answers.get('upgrade') == 'major':
-        if args.circuit:
-            if replies.get('circuit') == 'csp':
-                with open('package.json', 'r+') as pack:
-                    package = json.load(pack)
-                    with open('appCsp.json', 'r+') as cs:
-                        new = json.load(cs)
-                        if packaging.version.parse(new['expo']['version']) < packaging.version.parse(package['version']):
-                            new['expo']['version'] = package['version']
-                        else:
-                            package['version'] = new['expo']['version']
                         cs.seek(0)
                         json.dump(new, cs, indent=4)
                         cs.truncate()
@@ -161,9 +123,6 @@ def maximum_min_maj():
                         sah = json.load(sa)
                         if packaging.version.parse(sah['expo']['version']) < packaging.version.parse(package['version']):
                             sah['expo']['version'] = package['version']
-                        else:
-                            package['version'] = sah['expo']['version']
-                        major('appSahalin.json')
                         sa.seek(0)
                         json.dump(sah, sa, indent=4)
                         sa.truncate()
@@ -171,7 +130,34 @@ def maximum_min_maj():
                     json.dump(package, pack, indent=4)
                     pack.truncate()
 
-
+    elif answers.get('upgrade') == 'major':
+        if args.circuit:
+            if replies.get('circuit') == 'csp':
+                with open('package.json', 'r+') as pack:
+                    package = json.load(pack)
+                    with open('appCsp.json', 'r+') as cs:
+                        new = json.load(cs)
+                        if packaging.version.parse(new['expo']['version']) < packaging.version.parse(package['version']):
+                            new['expo']['version'] = package['version']
+                        cs.seek(0)
+                        json.dump(new, cs, indent=4)
+                        cs.truncate()
+                    pack.seek(0)
+                    json.dump(package, pack, indent=4)
+                    pack.truncate()
+            elif replies.get('circuit') == 'sahalin':
+                with open('package.json', 'r+') as pack:
+                    package = json.load(pack)
+                    with open('appSahalin.json', 'r+') as sa:
+                        sah = json.load(sa)
+                        if packaging.version.parse(sah['expo']['version']) < packaging.version.parse(package['version']):
+                            sah['expo']['version'] = package['version']
+                        sa.seek(0)
+                        json.dump(sah, sa, indent=4)
+                        sa.truncate()
+                    pack.seek(0)
+                    json.dump(package, pack, indent=4)
+                    pack.truncate()
 
 # Обновление expo.version/version, если --circuit
 def upd_version_with_circuit():
@@ -304,7 +290,7 @@ def alignment():
 # --build --circuit
 # меняются абсолютно все поля, но нужно выбрать дополнительный файл - csp / sahalin
 if args.build and args.circuit:
-    # upd_version_with_circuit()  # version, expo.version  - выбор circuit реализован и проверка patch
+    upd_version_with_circuit()  # version, expo.version  - выбор circuit реализован и проверка patch
     if answers.get('upgrade') == 'patch':
         if replies.get('circuit') == 'csp':
             os.system('echo build csp')
@@ -333,25 +319,12 @@ if args.build and args.circuit:
             increase_special_fields('appSahalin.json')
     maximum_min_maj()
 
-
-    # if answers.get('upgrade') == 'major':
-    #     # buildNumber, versionCode - выбор файла
-    #     if replies.get('circuit') == 'csp':
-    #         os.system('echo build csp')
-    #         increase_special_fields('appCsp.json')
-    #
-    #
-    #     elif replies.get('circuit') == 'sahalin':
-    #         os.system('echo build sahalin')
-    #         increase_special_fields('appSahalin.json')
-    #         alignment()
-
-
 # --bundle --circuit
 # меняется version, expo.version - нужно выбрать дополнительный файл - csp / sahalin
 elif args.bundle and args.circuit:
     os.system('echo bundle')
     upd_version_with_circuit()
+    alignment()
     maximum_min_maj()
 
 # --build
@@ -390,6 +363,7 @@ elif args.bundle and not args.circuit:
         major('package.json')
         major('appSahalin.json')
         major('appCsp.json')
+    alignment()
 
 else:
     raise ValueError('no key was found or you boy just nuts')
